@@ -1,9 +1,27 @@
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, Platform } from "react-native";
+import { useState, useEffect } from "react";
 import GradientBG from "../constants/gradientbg";
 import { DXLogo192, India } from "@/assets/images";
 import { RobotoBoldText } from "./StyledText";
+import * as NavigationBar from "expo-navigation-bar";
 
 export default function Splash() {
+  const [hasNavigationBar, setHasNavigationBar] = useState(true);
+
+  useEffect(() => {
+    const checkNavigationBar = async () => {
+      if (Platform.OS === "android") {
+        try {
+          const visibility = await NavigationBar.getVisibilityAsync();
+          setHasNavigationBar(visibility === "visible");
+        } catch (error) {
+          setHasNavigationBar(true);
+        }
+      }
+    };
+
+    checkNavigationBar();
+  }, []);
 
   return (
     <GradientBG>
@@ -17,7 +35,10 @@ export default function Splash() {
       </View>
 
       {/* Bottom "Made in India" */}
-      <View style={styles.footer}>
+      <View  style={[
+        styles.footer,
+        { marginBottom: hasNavigationBar ? 60 : 40 },
+      ]}>
         <RobotoBoldText style={styles.footerText}>Made in</RobotoBoldText>
         <Image source={India} style={styles.indiaFlag} resizeMode="contain" />
       </View>
@@ -40,7 +61,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 40, 
   },
   footerText: {
     color: "#000",

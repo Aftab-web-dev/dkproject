@@ -3,18 +3,42 @@ import LoginContainer from "@/components/LoginContainer";
 import CustomBottomSheet from "@/constants/Custombottomsheet";
 import GradientBG from "@/constants/gradientbg";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import React, { useMemo, useRef } from "react";
+import React, { useMemo, useRef, useState, useEffect } from "react";
 import { Image, StyleSheet, View, Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from "react-native-responsive-screen";
+import * as NavigationBar from "expo-navigation-bar";
+
 const Loginscreen = () => {
   const bottomSheetRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => {
-    if (Platform.OS === 'android') {
-      return [hp("45%"), "82%"];
-    }
-    return [hp("45%"), hp("78%")];
+  const [hasNavigationBar, setHasNavigationBar] = useState(false);
+
+  useEffect(() => {
+    const checkNavigationBar = async () => {
+      if (Platform.OS === "android") {
+        try {
+          const visibility = await NavigationBar.getVisibilityAsync();
+          setHasNavigationBar(visibility === "visible");
+          console.log("true")
+        } catch (error) {
+          setHasNavigationBar(true); // Default to true if detection fails
+          console.log("false")
+        }
+      }
+    };
+
+    checkNavigationBar();
   }, []);
+
+const snapPoints = useMemo(() => {
+  if (Platform.OS === "android") {
+    return hasNavigationBar
+      ? [hp("55%"), "82%"] // increase first snap point
+      : [hp("45%"), "82%"];
+  }
+  return [hp("45%"), hp("78%")];
+}, [hasNavigationBar]);
+
 
   const handleSheetChange = (index: number) => {
     console.log("Sheet changed to index:", index);

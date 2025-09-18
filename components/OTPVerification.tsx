@@ -283,8 +283,8 @@ const styles = StyleSheet.create({
     color: '#6B7280',
   },
   helpSection: {
-    alignItems: 'center',
-    marginTop: hp('4%'),
+    alignItems: 'flex-end',
+    marginTop: hp('1%'),
   },
   helpButton: {
     alignItems: 'center',

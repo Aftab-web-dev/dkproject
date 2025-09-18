@@ -25,7 +25,7 @@ interface LoginFormContentProps {
 
 const LoginFormContent: React.FC<LoginFormContentProps> = ({ onSendOTP, onFormComplete }) => {
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(true);
 
   // Check if form is complete (10 digits + terms accepted)
   const isFormComplete = phoneNumber.length === 10 && acceptedTerms;

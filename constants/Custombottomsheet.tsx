@@ -43,7 +43,7 @@ const CustomBottomSheet: React.FC<CustomBottomSheetProps> = ({
 
       const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
         // Android: return to index 0 when keyboard hides
-        bottomSheetRef.current?.snapToIndex(1);
+        bottomSheetRef.current?.snapToIndex(0);
       });
 
       return () => {
