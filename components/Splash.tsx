@@ -4,7 +4,7 @@ import GradientBG from "../constants/gradientbg";
 import { DXLogo192, India } from "@/assets/images";
 import { RobotoBoldText } from "./StyledText";
 import * as NavigationBar from "expo-navigation-bar";
-
+import { responsivefontsize } from "@/constants/responsivefontsize";
 export default function Splash() {
   const [hasNavigationBar, setHasNavigationBar] = useState(true);
 
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     color: "#000",
-    fontSize: 15,
+    fontSize: responsivefontsize(15),
     fontWeight: "800", 
     marginRight: 4, 
   },

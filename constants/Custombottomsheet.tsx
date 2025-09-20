@@ -37,8 +37,14 @@ const CustomBottomSheet: React.FC<CustomBottomSheetProps> = ({
   useEffect(() => {
     if (Platform.OS === 'android') {
       const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (event) => {
-        // Force to 100% height immediately on Android
-        bottomSheetRef.current?.snapToIndex(2);
+        // On Android, ensure we're at the highest snap point when keyboard shows
+        const keyboardHeight = event.endCoordinates.height;
+        const screenHeight = Dimensions.get('window').height;
+
+        // If keyboard takes up significant space, move to higher snap point
+        if (keyboardHeight > screenHeight * 0.3) {
+          bottomSheetRef.current?.snapToIndex(1);
+        }
       });
 
       const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
@@ -88,7 +94,7 @@ const CustomBottomSheet: React.FC<CustomBottomSheetProps> = ({
     <BottomSheet
       ref={bottomSheetRef ?? internalRef}
       onChange={handleSheetChanges}
-      keyboardBehavior={Platform.OS === 'android' ? 'interactive' : 'extend'}
+      keyboardBehavior="extend"
       keyboardBlurBehavior="restore"
       handleComponent={null}
       enablePanDownToClose={false}
@@ -117,7 +123,7 @@ const CustomBottomSheet: React.FC<CustomBottomSheetProps> = ({
           borderTopLeftRadius: borderRadius,
           borderTopRightRadius: borderRadius,
         }}
-        enableFooterMarginAdjustment={Platform.OS === 'android'}
+        enableFooterMarginAdjustment={true}
       >
         {children}
       </BottomSheetView>

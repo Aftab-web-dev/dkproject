@@ -1,0 +1,1 @@
+export { default as whatsappicon } from "./whatsapp.png";

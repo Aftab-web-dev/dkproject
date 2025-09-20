@@ -6,17 +6,21 @@ import {
   StyleSheet,
   Alert,
   Keyboard,
-  Platform
+  Platform,
+  Image
 } from "react-native";
+
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { RobotoBoldText } from "./StyledText";
-import { Ionicons } from '@expo/vector-icons'; 
+import { Ionicons } from '@expo/vector-icons';
 import axios from "axios";
 import { API_ENDPOINTS } from "@/constants/Baseurl";
+import { responsivefontsize } from "@/constants/responsivefontsize";
+import { whatsappicon } from "@/assets/icons";
 interface OTPVerificationProps {
   phoneNumber: string;
   onVerifyOTP?: (otp: string) => void;
@@ -39,6 +43,14 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
   const [canResend, setCanResend] = useState(false);
   const inputRefs = useRef<Array<any>>([]);
 
+  // Auto-focus first input when component mounts
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      inputRefs.current[0]?.focus();
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
   // Timer for resend OTP
   useEffect(() => {
     if (resendTimer > 0) {
@@ -52,29 +64,60 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
   }, [resendTimer]);
 
   async function OTPVerification({ phoneNumber, otp }: OTPVerificationParams) {
-  try {
-    const response = await axios.post(
-      API_ENDPOINTS.Authentication.verify_otp(),
-      {
-        phone: phoneNumber,
-        otp: otp,
-      }
-    );
+    try {
+      const response = await axios.post(
+        API_ENDPOINTS.Authentication.verify_otp(),
+        {
+          phone: phoneNumber,
+          otp: otp,
+        }
+      );
 
-    console.log("OTP verification response:", response.data);
-    return response.data; 
-  } catch (error: any) {
-    if (axios.isAxiosError(error)) {
-      console.error("API Error:", error.response?.data || error.message);
-    } else {
-      console.error("Unexpected Error:", error);
+      console.log("OTP verification response:", response.data);
+      return response.data;
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        console.error("API Error:", error.response?.data || error.message);
+      } else {
+        console.error("Unexpected Error:", error);
+      }
+      throw error;
     }
-    throw error; 
   }
-}
 
   // Handle OTP input change
-    const handleOTPChange = (value: string, index: number) => {
+  const handleOTPChange = (value: string, index: number) => {
+    // Handle full OTP paste (SMS autocomplete)
+    if (value.length > 1 && index === 0) {
+      const digits = value.replace(/\D/g, '').slice(0, 4).split('');
+      const newOtp = ['', '', '', ''];
+      digits.forEach((digit, i) => {
+        if (i < 4) newOtp[i] = digit;
+      });
+      setOtp(newOtp);
+
+      // Focus last filled input or first empty input
+      const lastFilledIndex = digits.length - 1;
+      if (lastFilledIndex < 3) {
+        inputRefs.current[lastFilledIndex + 1]?.focus();
+      } else {
+        Keyboard.dismiss();
+        // Auto-submit if all 4 digits are filled
+        if (digits.length === 4) {
+          const otpString = newOtp.join("");
+          OTPVerification({ phoneNumber, otp: otpString })
+            .then((res) => {
+              console.log("OTP verified successfully:", res);
+              onVerifyOTP?.(otpString);
+            })
+            .catch((err) => {
+              console.error("OTP verification failed:", err);
+            });
+        }
+      }
+      return;
+    }
+
     if (!/^\d*$/.test(value)) return; // only digits allowed
 
     const newOtp = [...otp];
@@ -121,7 +164,7 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
   };
 
   // Format phone number for display
-   const formatPhoneNumber = (phone: string) => {
+  const formatPhoneNumber = (phone: string) => {
     return phone.startsWith("+91") ? phone : `+91 ${phone}`;
   };
 
@@ -163,14 +206,11 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
               textAlign="center"
               selectTextOnFocus
               autoFocus={index === 0}
+              textContentType={index === 0 ? "oneTimeCode" : "none"}
+              autoComplete={index === 0 ? "sms-otp" : "off"}
             />
           ))}
         </View>
-
-        {/* Auto verification text */}
-        <Text style={styles.autoVerifyText}>
-          1234 (Auto from msg and Auto Verify)
-        </Text>
       </View>
 
       {/* Resend OTP Section */}
@@ -194,7 +234,8 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
         <TouchableOpacity style={styles.helpButton} activeOpacity={0.7}>
           <Text style={styles.helpText}>Help</Text>
           <View style={styles.whatsappIcon}>
-            <Ionicons name="logo-whatsapp" size={24} color="black" />
+            {/* <Ionicons name="logo-whatsapp" size={24} color="black" /> */}
+            <Image source={whatsappicon} style={styles.whatsappEmoji} />
           </View>
         </TouchableOpacity>
       </View>
@@ -224,12 +265,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: responsivefontsize(18),
     color: '#000',
     fontWeight: '500',
   },
   phoneNumber: {
-    fontSize: 16,
+    fontSize: responsivefontsize(14),
     color: '#000',
     fontWeight: '600',
     marginTop: 4,
@@ -248,7 +289,7 @@ const styles = StyleSheet.create({
     width: wp('12%'),
     height: wp('12%'),
     borderRadius: 8,
-    fontSize: 24,
+    fontSize: responsivefontsize(20),
     fontWeight: 'bold',
     color: '#000',
   },
@@ -264,7 +305,7 @@ const styles = StyleSheet.create({
     borderColor: '#000',
   },
   autoVerifyText: {
-    fontSize: 14,
+    fontSize: responsivefontsize(14),
     color: '#6B7280',
     textAlign: 'center',
   },
@@ -273,7 +314,7 @@ const styles = StyleSheet.create({
     marginTop: hp('3%'),
   },
   resendText: {
-    fontSize: 16,
+    fontSize: responsivefontsize(14),
     fontWeight: '600',
   },
   resendTextEnabled: {
@@ -290,26 +331,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   helpText: {
-    fontSize: 14,
+    fontSize: responsivefontsize(10),
     color: '#000',
     marginBottom: 8,
     fontWeight: '500',
   },
   whatsappIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#25D366',
+    width: 24,
+    height: 24,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+
   },
   whatsappEmoji: {
-    fontSize: 24,
-    color: '#fff',
+    width: 24,
+    height: 24, 
   },
 });

@@ -5,7 +5,11 @@ import { Stack } from 'expo-router'
 const layout = () => {
   return (
     <Stack>
-        <Stack.Screen name="Loginscreen"  options={{ title: "" ,  headerShadowVisible: false, }} />
+      <Stack.Screen name="Loginscreen" options={{
+        headerTitle: "",
+        headerTransparent: true,
+        headerShadowVisible: false
+      }} />
     </Stack>
   )
 }

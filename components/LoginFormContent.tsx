@@ -18,6 +18,7 @@ import {
 import { RobotoBoldText } from "./StyledText";
 import axios from 'axios'
 import { API_ENDPOINTS } from "@/constants/Baseurl";
+import { responsivefontsize } from "@/constants/responsivefontsize";
 interface LoginFormContentProps {
   onSendOTP?: (phoneNumber: string) => void;
   onFormComplete?: () => void;
@@ -166,14 +167,14 @@ const styles = StyleSheet.create({
     paddingBottom: hp("2%"),
   },
   logoWrapper: {
-    marginBottom: wp("5%"),
+    marginBottom: wp("1%"),
   },
   logo: {
     width: wp("25%"),
     height: hp("10%"),
   },
   title: {
-    fontSize: wp("7%"),
+    fontSize: responsivefontsize(25),
     fontWeight: "bold",
     color: "#000",
     marginBottom: hp("2%"),
@@ -201,12 +202,12 @@ const styles = StyleSheet.create({
     color: "#000",
     marginRight: 12,
     fontWeight: "500",
-    fontSize: 18,
+    fontSize: responsivefontsize(18),
   },
   phoneInput: {
     flex: 1,
     color: "#000",
-    fontSize: 18,
+    fontSize: responsivefontsize(18),
     fontWeight: "500",
   },
   termsWrapper: {
@@ -218,8 +219,8 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   checkbox: {
-    width: 20,
-    height: 20,
+    width: 17,
+    height: 17,
     borderWidth: 2,
     borderColor: "#D1D5DB", // gray-300
     borderRadius: 4,
@@ -235,11 +236,11 @@ const styles = StyleSheet.create({
   },
   checkmark: {
     color: "#fff",
-    fontSize: 12,
+    fontSize:responsivefontsize(9),
     fontWeight: "bold",
   },
   termsText: {
-    fontSize: 15,
+    fontSize: responsivefontsize(15),
     color: "#000", // gray-600
     lineHeight: 20,
     flex: 1,
@@ -247,6 +248,7 @@ const styles = StyleSheet.create({
   linkText: {
     color: "#3B82F6",
     fontWeight: "800",
+    fontSize: responsivefontsize(15),
     fontStyle: "italic",
     textDecorationLine: "underline",
   },
@@ -270,7 +272,7 @@ const styles = StyleSheet.create({
     shadowColor: "#E5E7EB", // gray-200
   },
   buttonText: {
-    fontSize: 18,
+    fontSize: responsivefontsize(18),
     fontWeight: "600",
   },
   buttonTextEnabled: {

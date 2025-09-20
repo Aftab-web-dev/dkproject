@@ -1,44 +1,20 @@
-import { DXLogo512 } from "@/assets/images";
+import { DXLogo1024 } from "@/assets/images";
 import LoginContainer from "@/components/LoginContainer";
 import CustomBottomSheet from "@/constants/Custombottomsheet";
 import GradientBG from "@/constants/gradientbg";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import React, { useMemo, useRef, useState, useEffect } from "react";
+import React, { useMemo, useRef } from "react";
 import { Image, StyleSheet, View, Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from "react-native-responsive-screen";
-import * as NavigationBar from "expo-navigation-bar";
-
 const Loginscreen = () => {
   const bottomSheetRef = useRef<BottomSheetModal>(null);
-  const [hasNavigationBar, setHasNavigationBar] = useState(false);
-
-  useEffect(() => {
-    const checkNavigationBar = async () => {
-      if (Platform.OS === "android") {
-        try {
-          const visibility = await NavigationBar.getVisibilityAsync();
-          setHasNavigationBar(visibility === "visible");
-          console.log("true")
-        } catch (error) {
-          setHasNavigationBar(true); // Default to true if detection fails
-          console.log("false")
-        }
-      }
-    };
-
-    checkNavigationBar();
+  const snapPoints = useMemo(() => {
+    if (Platform.OS === 'android') {
+      return [hp("60%"), "75%"];
+    }
+    return [hp("45%"), hp("78%")];
   }, []);
-
-const snapPoints = useMemo(() => {
-  if (Platform.OS === "android") {
-    return hasNavigationBar
-      ? [hp("55%"), "82%"] // increase first snap point
-      : [hp("45%"), "82%"];
-  }
-  return [hp("45%"), hp("78%")];
-}, [hasNavigationBar]);
-
 
   const handleSheetChange = (index: number) => {
     console.log("Sheet changed to index:", index);
@@ -50,7 +26,7 @@ const snapPoints = useMemo(() => {
         {/* Main logo section */}
         <View style={styles.logoContainer}>
           <Image
-            source={DXLogo512}
+            source={DXLogo1024}
             resizeMode="contain"
             style={styles.logo}
           />
@@ -78,12 +54,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   logoContainer: {
-    flex: 1,
+    position: "absolute",
+    top: hp("15%"),
+    left: 0,
+    right: 0,
+    height: hp("35%"),
     justifyContent: "center",
     alignItems: "center",
+  
   },
   logo: {
-    width: wp("150%"),
-    height: hp("100%"),
+    width: wp("160%"),
+    height: hp("70%"),
   },
 });
