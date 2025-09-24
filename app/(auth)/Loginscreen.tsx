@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   
   },
   logo: {
-    width: wp("60%"),
-    height: hp("25%"),
+    width: wp("160%"),
+    height: hp("70%"),
   },
 });
