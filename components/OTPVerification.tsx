@@ -9,7 +9,7 @@ import {
   Platform,
   Image
 } from "react-native";
-
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import {
   widthPercentageToDP as wp,
@@ -37,7 +37,7 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
   onGoBack,
   onResendOTP
 }) => {
-
+  const insets = useSafeAreaInsets();
   const [otp, setOtp] = useState(['', '', '', '']);
   const [resendTimer, setResendTimer] = useState(15);
   const [canResend, setCanResend] = useState(false);
@@ -170,7 +170,7 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
 
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingBottom: Math.max(insets.bottom, 16) }]}>
       {/* Header with back button */}
       <View style={styles.header}>
         <TouchableOpacity
@@ -326,6 +326,7 @@ const styles = StyleSheet.create({
   helpSection: {
     alignItems: 'flex-end',
     marginTop: hp('1%'),
+    marginBottom: hp('1.5%'),
   },
   helpButton: {
     alignItems: 'center',

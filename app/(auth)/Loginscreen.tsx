@@ -7,13 +7,16 @@ import React, { useMemo, useRef } from "react";
 import { Image, StyleSheet, View, Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from "react-native-responsive-screen";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 const Loginscreen = () => {
+  const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => {
-    if (Platform.OS === 'android') {
-      return [hp("60%"), "75%"];
-    }
-    return [hp("45%"), hp("78%")];
+   const snapPoints = useMemo(() => {
+    const base1 = Platform.OS === "android" ? 0.6 : 0.45; // 60% or 45%
+    const base2 = Platform.OS === "android" ? 0.75 : 0.78; // 75% or 78%
+    // Return percentages; the sheet component should add safe-area by padding/margin
+    // If CustomBottomSheet expects numbers/strings, keep strings:
+    return [`${base1 * 100}%`, `${base2 * 100}%`];
   }, []);
 
   const handleSheetChange = (index: number) => {
@@ -23,6 +26,10 @@ const Loginscreen = () => {
   return (
     <GestureHandlerRootView style={styles.root}>
       <GradientBG>
+        <View style={[
+            styles.safeContent,
+            { paddingTop: insets.top, paddingBottom: insets.bottom }
+          ]}>
         {/* Main logo section */}
         <View style={styles.logoContainer}>
           <Image
@@ -42,6 +49,7 @@ const Loginscreen = () => {
         >
           <LoginContainer />
         </CustomBottomSheet>
+        </View>
       </GradientBG>
     </GestureHandlerRootView>
   );
@@ -53,6 +61,7 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
   },
+  safeContent: { flex: 1 },
   logoContainer: {
     position: "absolute",
     top: hp("15%"),
@@ -64,7 +73,7 @@ const styles = StyleSheet.create({
   
   },
   logo: {
-    width: wp("160%"),
-    height: hp("70%"),
+    width: wp("60%"),
+    height: hp("25%"),
   },
 });

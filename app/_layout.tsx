@@ -8,7 +8,7 @@ import Splash from '@/components/Splash';
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
-
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -61,14 +61,16 @@ function RootLayoutNav() {
     <ThemeProvider value={DefaultTheme}>
       <StatusBar style="dark" />
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <BottomSheetModalProvider>
-          <Stack>
-            <Stack.Screen name="index"
-              options={{ headerShown: false, animation: "none" }} />
-            <Stack.Screen name="(auth)"
-              options={{ headerShown: false, animation: "slide_from_bottom" }} />
-          </Stack>
-        </BottomSheetModalProvider>
+        <SafeAreaProvider>
+          <BottomSheetModalProvider>
+            <Stack>
+              <Stack.Screen name="index"
+                options={{ headerShown: false, animation: "none" }} />
+              <Stack.Screen name="(auth)"
+                options={{ headerShown: false, animation: "slide_from_bottom" }} />
+            </Stack>
+          </BottomSheetModalProvider>
+        </SafeAreaProvider>
       </GestureHandlerRootView>
     </ThemeProvider>
   );

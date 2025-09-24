@@ -19,6 +19,7 @@ import { RobotoBoldText } from "./StyledText";
 import axios from 'axios'
 import { API_ENDPOINTS } from "@/constants/Baseurl";
 import { responsivefontsize } from "@/constants/responsivefontsize";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 interface LoginFormContentProps {
   onSendOTP?: (phoneNumber: string) => void;
   onFormComplete?: () => void;
@@ -27,7 +28,7 @@ interface LoginFormContentProps {
 const LoginFormContent: React.FC<LoginFormContentProps> = ({ onSendOTP, onFormComplete }) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [acceptedTerms, setAcceptedTerms] = useState(true);
-
+  const insets = useSafeAreaInsets();
   // Check if form is complete (10 digits + terms accepted)
   const isFormComplete = phoneNumber.length === 10 && acceptedTerms;
 
@@ -77,7 +78,7 @@ const LoginFormContent: React.FC<LoginFormContentProps> = ({ onSendOTP, onFormCo
 
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container , { paddingBottom: Math.max(insets.bottom, 16) }]}>
       {/* Small logo at top of bottom sheet */}
       <View style={styles.logoWrapper}>
         <Image
@@ -164,7 +165,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: wp("5%"),
     paddingTop: hp("2%"),
-    paddingBottom: hp("2%"),
   },
   logoWrapper: {
     marginBottom: wp("1%"),
