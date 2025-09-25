@@ -43,7 +43,7 @@ const CustomBottomSheet: React.FC<CustomBottomSheetProps> = ({
 
         // If keyboard takes up significant space, move to higher snap point
         if (keyboardHeight > screenHeight * 0.3) {
-          bottomSheetRef.current?.snapToIndex(1);
+          bottomSheetRef.current?.snapToIndex(2);
         }
       });
 
