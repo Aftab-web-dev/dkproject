@@ -9,7 +9,9 @@ import {
   StyleSheet,
   Keyboard,
   Platform,
-  TextInput
+  TextInput,
+  KeyboardAvoidingView,
+  ScrollView
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -77,6 +79,98 @@ const LoginFormContent: React.FC<LoginFormContentProps> = ({ onSendOTP, onFormCo
 };
 
 
+  if (Platform.OS === 'android') {
+    return (
+      <KeyboardAvoidingView
+        behavior="padding"
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={20}
+      >
+        <ScrollView
+          contentContainerStyle={[styles.container, { paddingBottom: Math.max(insets.bottom, 16) }]}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Small logo at top of bottom sheet */}
+          <View style={styles.logoWrapper}>
+            <Image
+              source={DXLogo512}
+              resizeMode="contain"
+              style={styles.logo}
+            />
+          </View>
+
+          {/* Title */}
+          <Text style={styles.title}>Get Report on Time</Text>
+
+          {/* Phone input */}
+          <View style={styles.inputWrapper}>
+            <View style={styles.phoneInputContainer}>
+              <RobotoBoldText style={styles.countryCode}>+91</RobotoBoldText>
+              <BottomSheetTextInput
+                style={styles.phoneInput}
+                placeholder="Enter your mobile number"
+                placeholderTextColor="#9CA3AF"
+                value={phoneNumber}
+                onChangeText={setPhoneNumber}
+                keyboardType="phone-pad"
+                maxLength={10}
+              />
+            </View>
+          </View>
+
+          {/* Terms and conditions */}
+          <View style={styles.termsWrapper}>
+            <TouchableOpacity
+              style={styles.termsRow}
+              activeOpacity={0.8}
+              onPress={() => setAcceptedTerms(!acceptedTerms)}
+            >
+              <View
+                style={[
+                  styles.checkbox,
+                  acceptedTerms && styles.checkboxChecked,
+                ]}
+              >
+                {acceptedTerms && <Text style={styles.checkmark}>✓</Text>}
+              </View>
+              <RobotoBoldText style={styles.termsText}>
+                I accept the{" "}
+                <RobotoBoldText style={styles.linkText}>Terms of Service</RobotoBoldText> &{" "}
+                <RobotoBoldText style={styles.linkText}>Privacy Policy</RobotoBoldText>.
+              </RobotoBoldText>
+            </TouchableOpacity>
+          </View>
+
+          {/* Send OTP Button */}
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={[
+              styles.button,
+              phoneNumber && acceptedTerms
+                ? styles.buttonEnabled
+                : styles.buttonDisabled,
+            ]}
+            onPress={handleSendOTP}
+            disabled={!phoneNumber || !acceptedTerms}
+          >
+            <Text
+              style={[
+                styles.buttonText,
+                phoneNumber && acceptedTerms
+                  ? styles.buttonTextEnabled
+                  : styles.buttonTextDisabled,
+              ]}
+            >
+              Send OTP
+            </Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    );
+  }
+
+  // iOS version (original)
   return (
     <View style={[styles.container , { paddingBottom: Math.max(insets.bottom, 16) }]}>
       {/* Small logo at top of bottom sheet */}
@@ -161,10 +255,11 @@ export default LoginFormContent;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     alignItems: "center",
     paddingHorizontal: wp("5%"),
     paddingTop: hp("2%"),
+    justifyContent: "space-between",
   },
   logoWrapper: {
     marginBottom: wp("1%"),

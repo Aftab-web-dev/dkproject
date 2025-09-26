@@ -41,15 +41,19 @@ const CustomBottomSheet: React.FC<CustomBottomSheetProps> = ({
         const keyboardHeight = event.endCoordinates.height;
         const screenHeight = Dimensions.get('window').height;
 
-        // If keyboard takes up significant space, move to higher snap point
-        if (keyboardHeight > screenHeight * 0.3) {
-          bottomSheetRef.current?.snapToIndex(2);
+        // More aggressive keyboard handling - if keyboard is visible, use highest snap point
+        if (keyboardHeight > screenHeight * 0.2) {
+          // Use the highest available snap point index
+          const maxIndex = snapPoints.length - 1;
+          bottomSheetRef.current?.snapToIndex(maxIndex);
         }
       });
 
       const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
         // Android: return to index 0 when keyboard hides
-        bottomSheetRef.current?.snapToIndex(0);
+        setTimeout(() => {
+          bottomSheetRef.current?.snapToIndex(0);
+        }, 100);
       });
 
       return () => {

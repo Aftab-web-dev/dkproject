@@ -12,11 +12,13 @@ const Loginscreen = () => {
   const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
    const snapPoints = useMemo(() => {
-    const base1 = Platform.OS === "android" ? 0.6 : 0.45; // 60% or 45%
-    const base2 = Platform.OS === "android" ? 0.75 : 0.78; // 75% or 78%
-    // Return percentages; the sheet component should add safe-area by padding/margin
-    // If CustomBottomSheet expects numbers/strings, keep strings:
-    return [`${base1 * 100}%`, `${base2 * 100}%`];
+    if (Platform.OS === "android") {
+      // Android needs 3 snap points: normal, keyboard shown, keyboard with content visible
+      return ["60%", "75%", "90%"];
+    } else {
+      // iOS works well with 2 snap points
+      return ["45%", "78%"];
+    }
   }, []);
 
   const handleSheetChange = (index: number) => {
