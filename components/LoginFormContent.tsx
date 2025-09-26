@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     fontSize: responsivefontsize(25),
     fontWeight: "bold",
     color: "#000",
-    marginBottom: hp("2%"),
+    marginBottom: hp("1%"),
   },
   inputWrapper: {
     width: "100%",
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
   },
   termsWrapper: {
     width: "100%",
-    marginBottom: 32,
+    marginBottom: hp("3%"),
   },
   termsRow: {
     flexDirection: "row",
@@ -253,15 +253,15 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
   },
   button: {
-    width: "100%",
-    paddingVertical: 16,
+    width: wp("90%"),
+    paddingVertical: wp("4%"),
     borderRadius: 16,
     alignItems: "center",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 3,
-    marginBottom: hp("3%"),
+    marginBottom: wp("6%"),
   },
   buttonEnabled: {
     backgroundColor: "#FACC15", // yellow-400
