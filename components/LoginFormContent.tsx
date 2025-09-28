@@ -1,5 +1,5 @@
 import { DXLogo512 } from "@/assets/images";
-import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
+import { BottomSheetTextInput ,BottomSheetView ,BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -81,12 +81,8 @@ const LoginFormContent: React.FC<LoginFormContentProps> = ({ onSendOTP, onFormCo
 
   if (Platform.OS === 'android') {
     return (
-      <KeyboardAvoidingView
-        behavior="padding"
-        style={{ flex: 1 }}
-        keyboardVerticalOffset={20}
-      >
-        <ScrollView
+      <BottomSheetView    >
+        <BottomSheetScrollView
           contentContainerStyle={[styles.container, { paddingBottom: Math.max(insets.bottom, 16) }]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
@@ -176,8 +172,8 @@ const LoginFormContent: React.FC<LoginFormContentProps> = ({ onSendOTP, onFormCo
               Send OTP
             </Text>
           </TouchableOpacity>
-        </ScrollView>
-      </KeyboardAvoidingView>
+        </BottomSheetScrollView>
+      </BottomSheetView>
     );
   }
 
