@@ -107,6 +107,17 @@ const LoginFormContent: React.FC<LoginFormContentProps> = ({ onSendOTP, onFormCo
           <View style={styles.inputWrapper}>
             <View style={styles.phoneInputContainer}>
               <RobotoBoldText style={styles.countryCode}>+91</RobotoBoldText>
+              {Platform.OS === "android" ? 
+              <TextInput
+               style={styles.phoneInput}
+                placeholder="Enter your mobile number"
+                placeholderTextColor="#9CA3AF"
+                value={phoneNumber}
+                onChangeText={setPhoneNumber}
+                keyboardType="phone-pad"
+                maxLength={10}
+                />
+                :
               <BottomSheetTextInput
                 style={styles.phoneInput}
                 placeholder="Enter your mobile number"
@@ -115,7 +126,7 @@ const LoginFormContent: React.FC<LoginFormContentProps> = ({ onSendOTP, onFormCo
                 onChangeText={setPhoneNumber}
                 keyboardType="phone-pad"
                 maxLength={10}
-              />
+              />}
             </View>
           </View>
 
@@ -295,7 +306,7 @@ const styles = StyleSheet.create({
   },
   countryCode: {
     color: "#000",
-    marginRight: 12,
+    marginRight: wp("2%"),
     fontWeight: "500",
     fontSize: responsivefontsize(18),
   },
@@ -314,12 +325,12 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   checkbox: {
-    width: 17,
-    height: 17,
+    width: wp("4%"),
+    height: wp("4%"),
     borderWidth: 2,
     borderColor: "#D1D5DB", // gray-300
     borderRadius: 4,
-    marginRight: 12,
+    marginRight: wp("1.5%"),
     marginTop: 2,
     alignItems: "center",
     justifyContent: "center",
