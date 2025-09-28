@@ -356,8 +356,8 @@ const styles = StyleSheet.create({
   },
   button: {
     width: wp("90%"),
-    paddingVertical: wp("4%"),
-    borderRadius: 16,
+    paddingVertical: wp("3%"),
+    borderRadius: wp("3%"),
     alignItems: "center",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
