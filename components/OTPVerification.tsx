@@ -7,7 +7,8 @@ import {
   Alert,
   Keyboard,
   Platform,
-  Image
+  Image,
+  BackHandler
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
@@ -62,6 +63,21 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
       setCanResend(true);
     }
   }, [resendTimer]);
+
+  // Handle hardware back button
+  useEffect(() => {
+    const backAction = () => {
+      onGoBack?.();
+      return true; // Prevent default behavior
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [onGoBack]);
 
   async function OTPVerification({ phoneNumber, otp }: OTPVerificationParams) {
     try {

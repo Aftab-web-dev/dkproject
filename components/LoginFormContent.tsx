@@ -154,17 +154,17 @@ const LoginFormContent: React.FC<LoginFormContentProps> = ({ onSendOTP, onFormCo
             activeOpacity={0.8}
             style={[
               styles.button,
-              phoneNumber && acceptedTerms
+              phoneNumber.length === 10 && acceptedTerms
                 ? styles.buttonEnabled
                 : styles.buttonDisabled,
             ]}
             onPress={handleSendOTP}
-            disabled={!phoneNumber || !acceptedTerms}
+            disabled={phoneNumber.length !== 10 || !acceptedTerms}
           >
             <Text
               style={[
                 styles.buttonText,
-                phoneNumber && acceptedTerms
+                phoneNumber.length === 10 && acceptedTerms
                   ? styles.buttonTextEnabled
                   : styles.buttonTextDisabled,
               ]}
@@ -236,17 +236,17 @@ const LoginFormContent: React.FC<LoginFormContentProps> = ({ onSendOTP, onFormCo
         activeOpacity={0.8}
         style={[
           styles.button,
-          phoneNumber && acceptedTerms
+          phoneNumber.length === 10 && acceptedTerms
             ? styles.buttonEnabled
             : styles.buttonDisabled,
         ]}
         onPress={handleSendOTP}
-        disabled={!phoneNumber || !acceptedTerms}
+        disabled={phoneNumber.length !== 10 || !acceptedTerms}
       >
         <Text
           style={[
             styles.buttonText,
-            phoneNumber && acceptedTerms
+            phoneNumber.length === 10 && acceptedTerms
               ? styles.buttonTextEnabled
               : styles.buttonTextDisabled,
           ]}
@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   logoWrapper: {
-    marginBottom: wp("1%"),
+    marginBottom: hp("2%"),
   },
   logo: {
     width: wp("25%"),
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
     fontSize: responsivefontsize(25),
     fontWeight: "bold",
     color: "#000",
-    marginBottom: hp("1%"),
+    marginBottom: hp("3%"),
   },
   inputWrapper: {
     width: "100%",
@@ -309,16 +309,19 @@ const styles = StyleSheet.create({
   phoneInput: {
     flex: 1,
     color: "#000",
-    fontSize: responsivefontsize(18),
+    fontSize: responsivefontsize(16),
     fontWeight: "500",
   },
   termsWrapper: {
     width: "100%",
     marginBottom: hp("3%"),
+    alignItems: "center",
+    justifyContent: "center",
   },
   termsRow: {
     flexDirection: "row",
-    alignItems: "flex-start",
+    alignItems: "center",
+    justifyContent: "center",
   },
   checkbox: {
     width: wp("4%"),
@@ -326,8 +329,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "#D1D5DB", // gray-300
     borderRadius: 4,
-    marginRight: wp("1.5%"),
-    marginTop: 2,
+    marginRight: wp("3%"),
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#fff",
@@ -342,15 +344,15 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   termsText: {
-    fontSize: responsivefontsize(15),
+    fontSize: responsivefontsize(13),
     color: "#000", // gray-600
     lineHeight: 20,
-    flex: 1,
+    textAlign: "center",
   },
   linkText: {
     color: "#3B82F6",
     fontWeight: "800",
-    fontSize: responsivefontsize(15),
+    fontSize: responsivefontsize(13),
     fontStyle: "italic",
     textDecorationLine: "underline",
   },
