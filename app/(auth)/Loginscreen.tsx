@@ -14,7 +14,7 @@ const Loginscreen = () => {
   const snapPoints = useMemo(() => {
     if (Platform.OS === "android") {
       // Android needs 3 snap points: normal, keyboard shown, keyboard with content visible
-      return ["55%", "60%", "82%"];
+      return ["55%", "70%", "85%"];
     } else {
       // iOS works well with 2 snap points
       return ["45%", "70%"];

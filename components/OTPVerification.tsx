@@ -40,7 +40,7 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
 }) => {
   const insets = useSafeAreaInsets();
   const [otp, setOtp] = useState(['', '', '', '']);
-  const [resendTimer, setResendTimer] = useState(15);
+  const [resendTimer, setResendTimer] = useState(45);
   const [canResend, setCanResend] = useState(false);
   const inputRefs = useRef<Array<any>>([]);
 
@@ -171,7 +171,7 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
   // Handle resend OTP
   const handleResendOTP = () => {
     if (canResend) {
-      setResendTimer(15);
+      setResendTimer(45);
       setCanResend(false);
       setOtp(['', '', '', '']);
       onResendOTP?.();
@@ -240,7 +240,7 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
             styles.resendText,
             canResend ? styles.resendTextEnabled : styles.resendTextDisabled
           ]}>
-            Resend OTP in {canResend ? '' : `${resendTimer}s`}
+            {canResend ? 'Resend OTP' : `Resend OTP in ${resendTimer}s`}
           </RobotoBoldText>
         </TouchableOpacity>
       </View>

@@ -109,7 +109,10 @@ const LoginFormContent: React.FC<LoginFormContentProps> = ({ onSendOTP, onFormCo
                 placeholder="Enter your mobile number"
                 placeholderTextColor="#9CA3AF"
                 value={phoneNumber}
-                onChangeText={setPhoneNumber}
+                onChangeText={(text) => {
+                  const numericText = text.replace(/[^0-9]/g, '');
+                  setPhoneNumber(numericText);
+                }}
                 keyboardType="phone-pad"
                 maxLength={10}
                 />
@@ -119,7 +122,10 @@ const LoginFormContent: React.FC<LoginFormContentProps> = ({ onSendOTP, onFormCo
                 placeholder="Enter your mobile number"
                 placeholderTextColor="#9CA3AF"
                 value={phoneNumber}
-                onChangeText={setPhoneNumber}
+                onChangeText={(text) => {
+                  const numericText = text.replace(/[^0-9]/g, '');
+                  setPhoneNumber(numericText);
+                }}
                 keyboardType="phone-pad"
                 maxLength={10}
               />}
@@ -201,7 +207,10 @@ const LoginFormContent: React.FC<LoginFormContentProps> = ({ onSendOTP, onFormCo
             placeholder="Enter your mobile number"
             placeholderTextColor="#9CA3AF"
             value={phoneNumber}
-            onChangeText={setPhoneNumber}
+            onChangeText={(text) => {
+              const numericText = text.replace(/[^0-9]/g, '');
+              setPhoneNumber(numericText);
+            }}
             keyboardType="phone-pad"
             maxLength={10}
           />
@@ -358,7 +367,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: wp("90%"),
-    paddingVertical: wp("3%"),
+    paddingVertical: wp("3.5%"),
     borderRadius: wp("3%"),
     alignItems: "center",
     shadowOffset: { width: 0, height: 2 },
