@@ -2,15 +2,17 @@ import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import LoginFormContent from './LoginFormContent'; // Your existing component
 import OTPVerification from './OTPVerification'; // The new OTP component
+import { useRouter } from 'expo-router';
 
 const LoginContainer: React.FC = () => {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState<'login' | 'otp'>('login');
   const [phoneNumber, setPhoneNumber] = useState('');
 
   const handleSendOTP = (phone: string) => {
     setPhoneNumber(phone);
     setCurrentStep('otp');
-    
+
     // Here you would typically make an API call to send OTP
     console.log('Sending OTP to:', phone);
     // Example API call:
@@ -19,12 +21,15 @@ const LoginContainer: React.FC = () => {
 
   const handleVerifyOTP = (otp: string) => {
     console.log('Verifying OTP:', otp, 'for phone:', phoneNumber);
-    
+
+    // Navigate to profile screen after successful OTP verification
+    router.push('/(auth)/Profilescreen');
+
     // Here you would typically verify the OTP with your backend
     // Example API call:
     // const isValid = await verifyOTPAPI(phoneNumber, otp);
     // if (isValid) {
-    //   // Navigate to next screen or complete login
+    //   router.push('/(auth)/Profilescreen');
     // } else {
     //   // Show error message
     // }

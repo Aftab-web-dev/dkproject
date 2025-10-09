@@ -11,7 +11,9 @@ import {
   Platform,
   TextInput,
   KeyboardAvoidingView,
-  ScrollView
+  ScrollView,
+  ActivityIndicator,
+  Alert
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -30,6 +32,7 @@ interface LoginFormContentProps {
 const LoginFormContent: React.FC<LoginFormContentProps> = ({ onSendOTP, onFormComplete }) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [acceptedTerms, setAcceptedTerms] = useState(true);
+  const [isSendingOTP, setIsSendingOTP] = useState(false);
   const insets = useSafeAreaInsets();
   // Check if form is complete (10 digits + terms accepted)
   const isFormComplete = phoneNumber.length === 10 && acceptedTerms;
@@ -64,19 +67,23 @@ const LoginFormContent: React.FC<LoginFormContentProps> = ({ onSendOTP, onFormCo
 
   
   const handleSendOTP = async () => {
-  if (phoneNumber && acceptedTerms) {
-    try {
-      onSendOTP?.(phoneNumber);
-
-      const response = await login(phoneNumber); 
-      console.log("OTP sent successfully:", response);
-    } catch (error) {
-      console.error("Failed to send OTP:", error);
+    if (phoneNumber && acceptedTerms) {
+      setIsSendingOTP(true);
+      try {
+        const response = await login(phoneNumber);
+        console.log("OTP sent successfully:", response);
+        onSendOTP?.(phoneNumber);
+      } catch (error: any) {
+        console.error("Failed to send OTP:", error);
+        const errorMessage = error.response?.data?.message || "Failed to send OTP. Please try again.";
+        Alert.alert("Error", errorMessage);
+      } finally {
+        setIsSendingOTP(false);
+      }
+    } else {
+      console.warn("Phone number missing or terms not accepted");
     }
-  } else {
-    console.warn("Phone number missing or terms not accepted");
-  }
-};
+  };
 
 
   if (Platform.OS === 'android') {
@@ -160,23 +167,27 @@ const LoginFormContent: React.FC<LoginFormContentProps> = ({ onSendOTP, onFormCo
             activeOpacity={0.8}
             style={[
               styles.button,
-              phoneNumber.length === 10 && acceptedTerms
+              phoneNumber.length === 10 && acceptedTerms && !isSendingOTP
                 ? styles.buttonEnabled
                 : styles.buttonDisabled,
             ]}
             onPress={handleSendOTP}
-            disabled={phoneNumber.length !== 10 || !acceptedTerms}
+            disabled={phoneNumber.length !== 10 || !acceptedTerms || isSendingOTP}
           >
-            <Text
-              style={[
-                styles.buttonText,
-                phoneNumber.length === 10 && acceptedTerms
-                  ? styles.buttonTextEnabled
-                  : styles.buttonTextDisabled,
-              ]}
-            >
-              Send OTP
-            </Text>
+            {isSendingOTP ? (
+              <ActivityIndicator size="small" color="#1F2937" />
+            ) : (
+              <Text
+                style={[
+                  styles.buttonText,
+                  phoneNumber.length === 10 && acceptedTerms
+                    ? styles.buttonTextEnabled
+                    : styles.buttonTextDisabled,
+                ]}
+              >
+                Send OTP
+              </Text>
+            )}
           </TouchableOpacity>
         </BottomSheetScrollView>
       </BottomSheetView>
@@ -245,23 +256,27 @@ const LoginFormContent: React.FC<LoginFormContentProps> = ({ onSendOTP, onFormCo
         activeOpacity={0.8}
         style={[
           styles.button,
-          phoneNumber.length === 10 && acceptedTerms
+          phoneNumber.length === 10 && acceptedTerms && !isSendingOTP
             ? styles.buttonEnabled
             : styles.buttonDisabled,
         ]}
         onPress={handleSendOTP}
-        disabled={phoneNumber.length !== 10 || !acceptedTerms}
+        disabled={phoneNumber.length !== 10 || !acceptedTerms || isSendingOTP}
       >
-        <Text
-          style={[
-            styles.buttonText,
-            phoneNumber.length === 10 && acceptedTerms
-              ? styles.buttonTextEnabled
-              : styles.buttonTextDisabled,
-          ]}
-        >
-          Send OTP
-        </Text>
+        {isSendingOTP ? (
+          <ActivityIndicator size="small" color="#1F2937" />
+        ) : (
+          <Text
+            style={[
+              styles.buttonText,
+              phoneNumber.length === 10 && acceptedTerms
+                ? styles.buttonTextEnabled
+                : styles.buttonTextDisabled,
+            ]}
+          >
+            Send OTP
+          </Text>
+        )}
       </TouchableOpacity>
     </View>
   );

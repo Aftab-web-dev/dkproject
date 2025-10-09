@@ -8,7 +8,8 @@ import {
   Keyboard,
   Platform,
   Image,
-  BackHandler
+  BackHandler,
+  ActivityIndicator
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
@@ -22,16 +23,14 @@ import axios from "axios";
 import { API_ENDPOINTS } from "@/constants/Baseurl";
 import { responsivefontsize } from "@/constants/responsivefontsize";
 import { whatsappicon } from "@/assets/icons";
+import * as SecureStore from 'expo-secure-store';
 interface OTPVerificationProps {
   phoneNumber: string;
   onVerifyOTP?: (otp: string) => void;
   onGoBack?: () => void;
   onResendOTP?: () => void;
 }
-interface OTPVerificationParams {
-  phoneNumber: string;
-  otp: string;
-}
+
 const OTPVerification: React.FC<OTPVerificationProps> = ({
   phoneNumber,
   onVerifyOTP,
@@ -42,6 +41,8 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
   const [otp, setOtp] = useState(['', '', '', '']);
   const [resendTimer, setResendTimer] = useState(45);
   const [canResend, setCanResend] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [error, setError] = useState('');
   const inputRefs = useRef<Array<any>>([]);
 
   // Auto-focus first input when component mounts
@@ -79,7 +80,7 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
     return () => backHandler.remove();
   }, [onGoBack]);
 
-  async function OTPVerification({ phoneNumber, otp }: OTPVerificationParams) {
+  const verifyOTPAPI = async (phoneNumber: string, otp: string) => {
     try {
       const response = await axios.post(
         API_ENDPOINTS.Authentication.verify_otp(),
@@ -90,19 +91,29 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
       );
 
       console.log("OTP verification response:", response.data);
+      if (response.data.token) {
+        await SecureStore.setItemAsync('authToken', response.data.token);
+        console.log("Token saved securely!");
+      } else {
+        console.warn("No token received in response");
+      }
       return response.data;
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
         console.error("API Error:", error.response?.data || error.message);
+        throw new Error(error.response?.data?.message || "OTP verification failed");
       } else {
         console.error("Unexpected Error:", error);
+        throw new Error("An unexpected error occurred");
       }
-      throw error;
     }
-  }
+  };
 
   // Handle OTP input change
   const handleOTPChange = (value: string, index: number) => {
+    // Clear any previous errors
+    setError('');
+
     // Handle full OTP paste (SMS autocomplete)
     if (value.length > 1 && index === 0) {
       const digits = value.replace(/\D/g, '').slice(0, 4).split('');
@@ -120,15 +131,7 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
         Keyboard.dismiss();
         // Auto-submit if all 4 digits are filled
         if (digits.length === 4) {
-          const otpString = newOtp.join("");
-          OTPVerification({ phoneNumber, otp: otpString })
-            .then((res) => {
-              console.log("OTP verified successfully:", res);
-              onVerifyOTP?.(otpString);
-            })
-            .catch((err) => {
-              console.error("OTP verification failed:", err);
-            });
+          handleVerifyOTP(newOtp.join(""));
         }
       }
       return;
@@ -148,15 +151,25 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
     // Auto-submit when all digits filled
     if (newOtp.every((digit) => digit !== "")) {
       Keyboard.dismiss();
-      const otpString = newOtp.join("");
-      OTPVerification({ phoneNumber, otp: otpString })
-        .then((res) => {
-          console.log("OTP verified successfully:", res);
-          onVerifyOTP?.(otpString);
-        })
-        .catch((err) => {
-          console.error("OTP verification failed:", err);
-        });
+      handleVerifyOTP(newOtp.join(""));
+    }
+  };
+
+  // Handle OTP verification
+  const handleVerifyOTP = async (otpString: string) => {
+    setIsVerifying(true);
+    setError('');
+    try {
+      await verifyOTPAPI(phoneNumber, otpString);
+      onVerifyOTP?.(otpString);
+    } catch (err: any) {
+      console.error("OTP verification failed:", err);
+      setError(err.message || "Invalid OTP. Please try again.");
+      // Clear OTP inputs on error
+      setOtp(['', '', '', '']);
+      inputRefs.current[0]?.focus();
+    } finally {
+      setIsVerifying(false);
     }
   };
 
@@ -174,6 +187,7 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
       setResendTimer(45);
       setCanResend(false);
       setOtp(['', '', '', '']);
+      setError('');
       onResendOTP?.();
       inputRefs.current[0]?.focus();
     }
@@ -212,7 +226,8 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
               ref={(ref) => { inputRefs.current[index] = ref; }}
               style={[
                 styles.otpInput,
-                digit ? styles.otpInputFilled : styles.otpInputEmpty
+                digit ? styles.otpInputFilled : styles.otpInputEmpty,
+                error ? styles.otpInputError : null
               ]}
               value={digit}
               onChangeText={(value) => handleOTPChange(value, index)}
@@ -224,9 +239,16 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
               autoFocus={index === 0}
               textContentType={index === 0 ? "oneTimeCode" : "none"}
               autoComplete={index === 0 ? "sms-otp" : "off"}
+              editable={!isVerifying}
             />
           ))}
         </View>
+        {isVerifying && (
+          <ActivityIndicator size="small" color="#000" style={styles.loader} />
+        )}
+        {error && (
+          <Text style={styles.errorText}>{error}</Text>
+        )}
       </View>
 
       {/* Resend OTP Section */}
@@ -320,6 +342,19 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#000',
   },
+  otpInputError: {
+    borderColor: '#EF4444',
+    borderWidth: 2,
+  },
+  loader: {
+    marginTop: hp('2%'),
+  },
+  errorText: {
+    color: '#EF4444',
+    fontSize: responsivefontsize(12),
+    marginTop: hp('1%'),
+    textAlign: 'center',
+  },
   autoVerifyText: {
     fontSize: responsivefontsize(14),
     color: '#6B7280',
@@ -362,6 +397,6 @@ const styles = StyleSheet.create({
   },
   whatsappEmoji: {
     width: 24,
-    height: 24, 
+    height: 24,
   },
 });

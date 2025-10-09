@@ -11,6 +11,9 @@ const layout = () => {
           headerTransparent: true,
           headerShadowVisible: false
         }} />
+        <Stack.Screen name="Profilescreen" options={{
+          headerShown: false,
+        }} />
       </Stack>
     </KeyboardAvoidingView>
   )
