@@ -81,6 +81,17 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
   }, [onGoBack]);
 
   const verifyOTPAPI = async (phoneNumber: string, otp: string) => {
+    // TEMPORARY: Skip OTP verification - accept any OTP
+    console.log("TEMPORARY MODE: Skipping OTP verification for:", phoneNumber, "OTP:", otp);
+
+    // Create a dummy token for testing
+    const dummyToken = 'temporary-dev-token-' + Date.now();
+    await SecureStore.setItemAsync('authToken', dummyToken);
+    console.log("Temporary token saved:", dummyToken);
+
+    return { success: true, token: dummyToken };
+
+    /* COMMENTED OUT - ORIGINAL CODE
     try {
       const response = await axios.post(
         API_ENDPOINTS.Authentication.verify_otp(),
@@ -107,6 +118,7 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
         throw new Error("An unexpected error occurred");
       }
     }
+    */
   };
 
   // Handle OTP input change
