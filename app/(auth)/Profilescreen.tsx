@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Keyboard } from 'react-native'
-import React, { useState } from 'react'
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Keyboard, Platform, BackHandler } from 'react-native'
+import React, { useState, useEffect } from 'react'
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -28,6 +28,16 @@ const Profilescreen = () => {
   const [shouldVibrate, setShouldVibrate] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Prevent back navigation
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      // Return true to prevent default back behavior
+      return true;
+    });
+
+    return () => backHandler.remove();
+  }, []);
+
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -35,11 +45,7 @@ const Profilescreen = () => {
 
   const handleEmailChange = (text: string) => {
     setEmail(text);
-    if (text && !validateEmail(text)) {
-      setEmailError('Invalid Email');
-    } else {
-      setEmailError('');
-    }
+    if (emailError) setEmailError('');
   };
   
   const handleSubmit = async () => {
@@ -69,7 +75,6 @@ const Profilescreen = () => {
       );
 
       console.log("Profile updated:", response.data);
-      Alert.alert("Success", "Profile updated successfully!");
 
       // Navigate to home or next screen
       // router.push('/(tabs)/home'); // Uncomment and adjust path as needed
@@ -85,12 +90,16 @@ const Profilescreen = () => {
 
 
   const handleFirstNameChange = (text: string) => {
-    setFirstName(text);
+    // Only allow alphabetic characters (letters and spaces)
+    const alphabeticOnly = text.replace(/[^a-zA-Z\s]/g, '');
+    setFirstName(alphabeticOnly);
     if (firstNameError) setFirstNameError('');
   };
 
   const handleLastNameChange = (text: string) => {
-    setLastName(text);
+    // Only allow alphabetic characters (letters and spaces)
+    const alphabeticOnly = text.replace(/[^a-zA-Z\s]/g, '');
+    setLastName(alphabeticOnly);
     if (lastNameError) setLastNameError('');
   };
 
@@ -179,7 +188,7 @@ const Profilescreen = () => {
             </View>
 
             {/* Name Label and Fields */}
-            <View style={styles.nameContainer}>
+            <View style={[styles.nameContainer, (firstNameError || lastNameError) && styles.nameContainerWithError]}>
             <Text style={styles.label}>Name:</Text>
               <View style={styles.nameInputWrapper}>
                 <Inputfield
@@ -193,7 +202,7 @@ const Profilescreen = () => {
                   placeholder="Last Name"
                   value={lastName}
                   onChangeText={handleLastNameChange}
-                />
+                  />
               </View>
             </View>
             {(firstNameError || lastNameError) ? (
@@ -201,9 +210,10 @@ const Profilescreen = () => {
                 {firstNameError || lastNameError}
               </Text>
             ) : null}
+   
 
             {/* Gender Selection */}
-            <View style={styles.genderContainer}>
+            <View style={[styles.genderContainer, genderError && styles.genderContainerWithError]}>
             <Text style={styles.label}>Gender:</Text>
               <TouchableOpacity
                 style={[styles.genderButton, gender === 'Male' && styles.genderButtonSelected]}
@@ -235,7 +245,7 @@ const Profilescreen = () => {
             {genderError ? <Text style={styles.genderErrorText}>{genderError}</Text> : null}
 
             {/* Email Field */}
-            <View style={styles.emailContainer}>
+            <View style={[styles.emailContainer, emailError && styles.emailContainerWithError]}>
             <Text style={styles.label}>Email Id:</Text>
             <Inputfield
               placeholder="Enter Your Email Id"
@@ -286,13 +296,17 @@ const styles = StyleSheet.create({
     fontSize: responsivefontsize(15),
     fontWeight: '400',
     color: 'black',
+    width: wp("18%"),
   },
   nameContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
+    marginBottom: wp("8%"),
     alignItems:"center",
-    gap: wp("3%"),
-    marginBottom: wp("9%"),
+    gap: wp("2%"),
+  },
+  nameContainerWithError: {
+    marginBottom: wp("3%"),
   },
   nameInputWrapper: {
     flex: 1,
@@ -300,18 +314,24 @@ const styles = StyleSheet.create({
   emailContainer:{
     flexDirection: 'row',
     alignItems:"center",
-    gap: wp("3%"),
-    marginBottom: wp("5%"),
+    gap: wp("2%"),
+    marginBottom: wp("8%"),
+  },
+  emailContainerWithError: {
+    marginBottom: wp("3%"),
   },
   genderContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
     gap: wp("2%"),
-     marginBottom: wp("9%"),
+    marginBottom: wp("8%"),
+  },
+  genderContainerWithError: {
+    marginBottom: wp("3%"),
   },
   genderButton: {
-   paddingHorizontal: wp("6.3%"),
+   paddingHorizontal: Platform.OS === "ios" ? wp("5.5%") :  wp("5.6%"),
     paddingVertical: wp("2%"),
     backgroundColor: '#FFFFFF',
     borderRadius: wp("2.5%"),
@@ -336,23 +356,23 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#EF4444',
     fontSize: responsivefontsize(12),
-    marginTop: -wp("2%"),
-    marginBottom: wp("3%"),
-    marginLeft: wp("18%"),
+    marginTop: wp("1%"),
+    marginBottom: wp("4%"),
+    marginLeft: wp("20%"),
   },
   nameErrorText: {
     color: '#EF4444',
     fontSize: responsivefontsize(12),
-    marginTop: -wp("4%"),
-    marginBottom: wp("3%"),
-    marginLeft: wp("15%"),
+    marginTop: wp("1%"),
+    marginBottom: wp("4%"),
+    marginLeft: wp("20%"),
   },
   genderErrorText: {
     color: '#EF4444',
     fontSize: responsivefontsize(12),
-    marginTop: -wp("4%"),
-    marginBottom: wp("3%"),
-    marginLeft: wp("18%"),
+    marginTop: wp("1%"),
+    marginBottom: wp("4%"),
+    marginLeft: wp("20%"),
   },
   buttonContainer: {
     paddingHorizontal: wp("5%"),
